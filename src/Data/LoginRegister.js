@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 export const useAuthForm = () => {
   const navigate = useNavigate();
+
+  // 🔒 Guard to prevent duplicate toast (React 18 StrictMode fix)
+  const isSubmittingRef = useRef(false);
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -21,14 +24,19 @@ export const useAuthForm = () => {
   };
 
   // =====================
-  // REGISTER
+  // REGISTER LOGIC
   // =====================
   const handleRegisterSubmit = (e, onNavigate) => {
     e.preventDefault();
 
+    // 🔒 Duplicate submit guard
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
+
+    toast.dismiss();
+
     const users = JSON.parse(localStorage.getItem("users")) || [];
 
-    // Email OR Mobile already exists check
     const exists = users.some(
       (u) =>
         u.email === formData.email ||
@@ -37,64 +45,71 @@ export const useAuthForm = () => {
 
     if (exists) {
       toast.error("⚠️ Email or Mobile already registered");
+      isSubmittingRef.current = false;
       return;
     }
 
-    // Role logic
     const role = formData.email === "admin@gmail.com" ? 1 : 2;
 
     const newUser = {
-      id: Date.now(), // unique ID
+      id: Date.now(),
       fullName: formData.fullName,
       mobileNumber: formData.mobileNumber,
       email: formData.email,
       password: formData.password,
-      role, // 1 = admin, 2 = user
+      role,
       createdAt: new Date().toISOString(),
     };
 
     users.push(newUser);
     localStorage.setItem("users", JSON.stringify(users));
 
-    toast.success("🎉 Signup successful! Redirecting to login...");
+    toast.success("🎉 Signup successful!");
 
-    // ⏳ small delay → switch to login UI
     setTimeout(() => {
-      if (onNavigate) onNavigate(); // setView('login')
+      isSubmittingRef.current = false;
+      if (onNavigate) onNavigate();
     }, 1500);
   };
 
   // =====================
-  // LOGIN (EMAIL OR MOBILE)
+  // LOGIN LOGIC
   // =====================
   const handleLoginSubmit = (e) => {
     e.preventDefault();
+
+    // 🔒 Duplicate submit guard (MAIN FIX)
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
+
+    toast.dismiss();
 
     const users = JSON.parse(localStorage.getItem("users")) || [];
 
     const foundUser = users.find(
       (u) =>
-        (u.email === formData.email || // email login
-          u.mobileNumber === formData.email) && // mobile login
+        (u.email === formData.email ||
+          u.mobileNumber === formData.email) &&
         u.password === formData.password
     );
 
     if (!foundUser) {
       toast.error("❌ Invalid Email/Mobile or Password");
+      isSubmittingRef.current = false;
       return;
     }
 
-    // Store logged-in user
     localStorage.setItem("currentUser", JSON.stringify(foundUser));
 
-    toast.success(
+    const successMsg =
       foundUser.role === 1
         ? "👑 Admin login successful"
-        : "✅ Login successful"
-    );
+        : "✅ Login successful";
 
-    // 🔁 Redirect to Matrimony Form page
+    toast.success(successMsg);
+
     setTimeout(() => {
+      isSubmittingRef.current = false;
       navigate("/form");
     }, 1000);
   };

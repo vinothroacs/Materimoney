@@ -63,66 +63,78 @@
 import React, { useState } from "react";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
-import BrideGroom from "../assets/Bride&Groom.jpg";
+import BrideGroom from "../assets/perumal.jpg";
 
 const Home = () => {
   const [view, setView] = useState("login");
 
   return (
-    <div className="relative min-h-screen w-full bg-[#564b5d] text-[#3B1E54] overflow-hidden flex flex-col font-serif">
+    // h-screen + overflow-hidden to stop scrolling
+    <div className="h-screen w-full bg-[#3B1E54]  flex items-center justify-center overflow-hidden relative font-serif">
       
-      {/* ✅ Background Image */}
- <div
-  className="absolute inset-0 bg-cover bg-center opacity-20"
-  style={{ backgroundImage: `url(${BrideGroom})` }}
-/>
+      {/* Background Layers */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#3B1E54] via-[#2b163d] to-[#564b5d] z-0" />
+      
+      {/* Ambient Glows for OG Theme */}
+      <div className="absolute -top-20 -left-20 w-96 h-96 bg-[#9B7EBD] opacity-20 rounded-full blur-[120px]" />
+      <div className="absolute -bottom-20 -right-20 w-96 h-96 bg-[#D4BEE4] opacity-10 rounded-full blur-[120px]" />
 
-
-      {/* Overlay for better contrast */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#2b2232]/80 to-[#564b5d]/20 z-0" />
-
-      {/* Decorative Circle */}
-      <div className="absolute top-1/2 -right-24 -translate-y-1/2 w-[600px] h-[600px] border border-[#9B7EBD]/20 rounded-full hidden lg:block z-0" />
-
-      {/* Main Content */}
-      <div className="relative z-10 flex flex-col lg:flex-row min-h-screen">
+      <div className="relative z-10 w-full max-w-[1400px] px-6 h-[90vh] flex flex-col lg:flex-row items-center justify-between gap-12">
         
-        {/* LEFT CONTENT */}
-        <div className="flex-1 flex flex-col justify-center p-8 md:p-16 lg:pl-24">
-          <h2 className="text-[#9B7EBD] font-medium tracking-[0.3em] text-xs md:text-sm mb-4 uppercase">
-            தென்னிந்திய தாசபளஞ்சிக மஹாஜன சங்கம்
-          </h2>
+        {/* LEFT SECTION: Titles & Fixed-Size Form */}
+        <div className="w-full lg:w-[50%] flex flex-col justify-center h-full space-y-8">
+          
+          <div className="space-y-4 text-center lg:text-left">
+            <h1 className="text-4xl md:text-6xl font-bold leading-tight text-white">
+              தென்னிந்திய <br />
+              <span className="text-[#D4BEE4]">தாசபளஞ்சிக மஹாஜன சங்கம்</span>
+            </h1>
+            <div className="lg:border-l-4 border-[#9B7EBD] lg:pl-6">
+              <p className="font-bold text-xl md:text-2xl text-[#9B7EBD]">“திருமண தகவல் மையம்”</p>
+            </div>
+          </div>
 
-          <h1 className="text-4xl md:text-6xl font-bold text-[#D4BEE4] leading-tight mb-6">
-            திருமண <span className="text-white italic">தகவல் மையம்</span>
-          </h1>
-
-          <div className="w-20 h-1 bg-[#9B7EBD] mb-8"></div>
-
-          <p className="text-gray-400 text-[11px] md:text-xs tracking-widest leading-relaxed uppercase">
-            41-46, 7வது வீதி, பாடாபாத், <br />
-            காந்திபுரம், கோவை - 641 012.
-          </p>
-        </div>
-
-        {/* RIGHT CARD SECTION */}
-        <div className="flex-1 flex items-center justify-center p-6 lg:pr-24">
-          <div className="w-full max-w-[450px] relative">
+          {/* Form Card - Fixed Height & Proper Alignment */}
             
-            {/* Decorative Border Glow */}
-            <div className="absolute -inset-1 bg-gradient-to-r from-[#3B1E54] via-[#9B7EBD] to-[#3B1E54] rounded-[42px] blur opacity-30" />
-
-            {/* Login / Register Card */}
-            <div className="relative">
-              {view === "login" ? (
+              <div className="flex-2  pr-2 ">
+               {view === "login" ? (
                 <Login onNavigate={() => setView("register")} />
               ) : (
                 <Register onNavigate={() => setView("login")} />
               )}
             </div>
+            {/* View Toggle */}
+            {/* <div className="flex gap-8 mb-8 justify-center lg:justify-start border-b border-white/10">
+              <button 
+                onClick={() => setView("login")}
+                className={`pb-4 text-lg font-bold tracking-widest transition-all ${view === 'login' ? 'text-[#D4BEE4] border-b-4 border-[#9B7EBD]' : 'text-gray-500'}`}
+              >
+                LOGIN
+              </button>
+              <button 
+                onClick={() => setView("register")}
+                className={`pb-2 text-lg font-bold tracking-widest transition-all ${view === 'register' ? 'text-[#D4BEE4] border-b-4 border-[#9B7EBD]' : 'text-gray-500'}`}
+              >
+                SIGN UP
+              </button>
+            </div> */}
 
+            {/* Form Area - Scrollable internally if content is long, but card won't expand */}
+          
+      
+        </div>
+
+        {/* RIGHT SECTION: Image Frame */}
+        <div className="hidden lg:flex w-[45%] h-full items-center justify-center">
+          <div className="relative p-3 bg-white/5 rounded-[70px] border border-white/10">
+            <img 
+              src={BrideGroom} 
+              alt="Traditional Decor" 
+              className="rounded-[60px] w-full max-h-[75vh] object-cover border-2 border-[#9B7EBD]/20 shadow-2xl"
+            />
           </div>
         </div>
+
       </div>
     </div>
   );

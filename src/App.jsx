@@ -10,7 +10,7 @@ function App() {
       <Toaster
         position="top-right"
         toastOptions={{
-          duration: 3000,
+          duration: 1500,
           style: {
             borderRadius: "12px",
             fontWeight: "600",
