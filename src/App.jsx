@@ -1,12 +1,21 @@
-import React from 'react';
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import { BrowserRouter } from 'react-router-dom';
-import LoginRoutes from './routes/LoginRoutes'; // Adjust path if needed
+
+import LoginRoutes from "./routes/LoginRoutes";
+import UserRoutes from "./routes/UserRoutes";
 
 function App() {
   return (
     <BrowserRouter>
-      <LoginRoutes />
+      <Routes>
+        {/* LOGIN / PUBLIC ROUTES */}
+        <Route path="/*" element={<LoginRoutes />} />
+
+        {/* USER ROUTES */}
+        <Route path="/user/*" element={<UserRoutes />} />
+      </Routes>
+
       <Toaster
         position="top-right"
         toastOptions={{

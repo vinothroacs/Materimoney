@@ -1,11 +1,19 @@
-import React from "react";
 import { Routes, Route } from "react-router-dom";
-import UserDashboard from "../components/user/UserDasboard";
+import UserDashboard from "../components/user/UserDashboard";
+import ConnectionCard from "../components/user/ConnectionCard";
+import MyConnection from "../components/user/MyConnection";
+import Profile from "../components/user/Profile";
+import React from "react";
 
 const UserRoutes = () => {
   return (
     <Routes>
-      <Route path="/userdashboard" element={<UserDashboard />} />
+      {/* ALL USER PAGES USE SAME LAYOUT */}
+      <Route element={<UserDashboard />}>
+        <Route path="dashboard" element={<ConnectionCard />} />
+        <Route path="my-connection" element={<MyConnection />} />
+        <Route path="profile" element={<Profile />} />
+      </Route>
     </Routes>
   );
 };

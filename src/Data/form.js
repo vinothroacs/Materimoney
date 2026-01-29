@@ -1,56 +1,84 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
+
 export const useMatrimonyForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [profiles, setProfiles] = useState([]);
 
   const [formData, setFormData] = useState({
-    fullName: "", gender: "", dob: "", birthTime: "", maritalStatus: "",
-    education: "", occupation: "", income: "",
-    father: "", mother: "", grandfather: "", grandmother: "",
-    siblings: "", kuladeivam: "", raasi: "", star: "", religion: "",   caste: "",  dosham: "",
-    horoscope: null, address: "", city: "", country: "", privacy: "", photo: null,
+    fullName: "",
+    gender: "",
+    dob: "",
+    birthTime: "",
+    maritalStatus: "",
+    education: "",
+    occupation: "",
+    income: "",
+    father: "",
+    mother: "",
+    grandfather: "",
+    grandmother: "",
+    raasi: "",
+    star: "",
+    dosham: "",
+    religion: "",
+    caste: "",
+    horoscope: null,
+    address: "",
+    city: "",
+    country: "",
+    privacy: "",
+    photo: null,
   });
 
+  // 🔥 horoscope removed from mandatory validation
   const stepFields = [
     ["fullName", "gender", "dob", "birthTime", "maritalStatus"],
     ["education", "occupation", "income"],
     ["father", "mother", "grandfather", "grandmother"],
-    ["raasi", "star", "dosham", "horoscope"],
+    ["raasi", "star", "dosham"], // FIXED
     ["address", "city", "country"],
-    ["privacy", "photo"],
+    ["privacy"],
   ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((p) => ({ ...p, [name]: value }));
   };
 
   const handleFileChange = (e) => {
     const { name, files } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: files[0] }));
+    setFormData((p) => ({ ...p, [name]: files[0] }));
   };
 
   const validateStep = () => {
     const fields = stepFields[currentStep];
     if (!fields) return true;
-    return fields.every((field) => formData[field] && formData[field] !== "");
+    return fields.every((f) => formData[f]);
   };
 
   const nextStep = () => {
     if (!validateStep()) {
-      toast.error("Please fill all mandatory fields !");
+      toast.error("Please fill all required fields");
       return;
     }
-    setCurrentStep((prev) => prev + 1);
+    setCurrentStep((p) => p + 1);
   };
 
-  const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
+  const prevStep = () => setCurrentStep((p) => Math.max(p - 1, 0));
 
-  const submitForm = () => {
-    setProfiles((prev) => [...prev, formData]);
-    toast.success("Profile submitted successfully 💍");
+const submitForm = () => {
+  console.log("FINAL SUBMITTED DATA:", formData);
+  toast.success("Profile submitted successfully 💍");
+};
+
+
+  return {
+    currentStep,
+    formData,
+    handleChange,
+    handleFileChange,
+    nextStep,
+    prevStep,
+    submitForm,
   };
-
-  return { currentStep, formData, handleChange, handleFileChange, nextStep, prevStep, submitForm };
 };

@@ -9,10 +9,9 @@ const LoginRoutes = () => {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/register" element={<Register />} />
-
-      {/* AFTER LOGIN */}
       <Route path="/form" element={<MatrimonyForm />} />
 
+      {/* fallback only for LOGIN scope */}
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
