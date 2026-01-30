@@ -63,7 +63,7 @@ const UserDashboardLayout = ({
         <div className="p-8 flex flex-col items-center">
           <div
             className="relative mb-4 cursor-pointer"
-            onClick={onAvatarClick}
+            
           >
             <img
               src={user?.photo || "/default-avatar.png"}

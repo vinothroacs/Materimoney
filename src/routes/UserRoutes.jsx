@@ -14,7 +14,7 @@ const UserRoutes = () => {
         <Route path="dashboard" element={<ConnectionCard />} />
         <Route path="my-connection" element={<MyConnection />} />
         {/* 🔥 FIX HERE */}
-        <Route path="profile/:id" element={<Profile />} />
+        <Route path="profile" element={<Profile />} />
           <Route path="notifications" element={<Notifications />} />
       </Route>
     </Routes>
