@@ -7,18 +7,37 @@ const AllUsers = () => {
   const [filter, setFilter] = useState("all");
   const [selectedUser, setSelectedUser] = useState(null);
   const [activeTab, setActiveTab] = useState("personal");
+const [togglingUserId, setTogglingUserId] = useState(null);
 
-  const togglePublicStatus = (id) => {
-    setData(prev => prev.map(u => u.id === id ? { ...u, isPublic: !u.isPublic } : u));
-  };
+const togglePublicStatus = (id) => {
+  setTogglingUserId(id);
 
-  const filteredUsers = data.filter((u) => {
-    if (filter === "all") return true;
-    if (filter === "male" || filter === "female") return u.gender.toLowerCase() === filter.toLowerCase();
-    if (filter === "active") return u.isPublic === true;
-    if (filter === "inactive") return u.isPublic === false;
-    return true;
-  });
+  setData(prev =>
+    prev.map(u =>
+      u.id === id ? { ...u, isPublic: !u.isPublic } : u
+    )
+  );
+
+  setTimeout(() => {
+    setTogglingUserId(null);
+  }, 300);
+};
+
+
+const filteredUsers = data.filter((u) => {
+  if (togglingUserId === u.id) return true;
+
+  if (filter === "all") return true;
+
+  if (filter === "male" || filter === "female") {
+    return u.gender.toLowerCase() === filter;
+  }
+
+  if (filter === "active") return u.isPublic;
+  if (filter === "inactive") return !u.isPublic;
+
+  return true;
+});
 
   /* ================= 1. RESPONSIVE PROFILE DETAIL VIEW ================= */
   if (selectedUser) {

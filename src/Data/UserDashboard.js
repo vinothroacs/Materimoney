@@ -1,8 +1,14 @@
 import toast from "react-hot-toast";
+import { users } from "./Users";
+
 
 /* 🔴 LOGGED IN USER (frontend dummy – ONLY THIS IS NEW) */
 export const loggedInUser = {
   gender: "FeMale", // change to "Female" to test
+};
+
+export const getUserById = (id) => {
+  return users.find((u) => u.id === id);
 };
 
 export const dummyConnections = [

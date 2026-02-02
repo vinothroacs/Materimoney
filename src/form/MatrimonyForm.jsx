@@ -192,6 +192,14 @@ const MatrimonyForm = () => {
                   onChange={handleChange}
                   value={formData.grandmother}
                 />
+                    <input
+                  className={input}
+                  name="siblings"
+                  placeholder=" siblings"
+                  type="number"
+                  onChange={handleChange}
+                  value={formData.siblings}
+                />
               </div>
             )}
 
