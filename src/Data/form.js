@@ -78,58 +78,31 @@ export const useMatrimonyForm = () => {
   // =====================
   // FINAL SUBMIT
   // =====================
-  const submitForm = () => {
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+const submitForm = async () => {
+  try {
+    const token = localStorage.getItem("token");
 
-    if (!currentUser) {
-      toast.error("Please login again");
+    const res = await fetch("http://localhost:5000/api/user/form/submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      toast.error(data.message || "Submit failed");
       return;
     }
 
-    // 1️⃣ SAVE TO PENDING PROFILES (ADMIN VIEW)
-    const pending =
-      JSON.parse(localStorage.getItem("pending_profiles")) || [];
-pending.push({
-  id: currentUser.id,
-  role: "USER",
-  email: currentUser.email,
-  status: "PENDING",
-  profile: formData,
-});
-
-
-    localStorage.setItem(
-      "pending_profiles",
-      JSON.stringify(pending)
-    );
-
-    // 2️⃣ UPDATE USER STATUS → PENDING
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-
-    const updatedUsers = users.map((u) =>
-      u.id === currentUser.id
-        ? {
-            ...u,
-            hasSubmittedForm: true,
-            status: "PENDING", // 🔥 BLOCK NEXT LOGIN
-          }
-        : u
-    );
-
-    localStorage.setItem("users", JSON.stringify(updatedUsers));
-
-    // 3️⃣ UPDATE CURRENT USER
-    localStorage.setItem(
-      "currentUser",
-      JSON.stringify({
-        ...currentUser,
-        hasSubmittedForm: true,
-        status: "PENDING",
-      })
-    );
-
     toast.success("Profile submitted for admin approval ⏳");
-  };
+  } catch (err) {
+    toast.error("Server error");
+  }
+};
 
   // =====================
   // RETURN

@@ -1,6 +1,121 @@
+
+
+
+// import { useState, useRef } from "react";
+// import { useNavigate } from "react-router-dom";
+// import toast from "react-hot-toast";
+// import axiosInstance from "../services/axiosMiddleware";
+// import { registerUser, loginUser } from "../services/authService";
+
+// import axios from "axios";
+
+// export const useAuthForm = () => {
+//   const navigate = useNavigate();
+//   const isSubmittingRef = useRef(false);
+
+//   const [formData, setFormData] = useState({
+//     fullName: "",
+//     mobileNumber: "",
+//     email: "",
+//     password: "",
+//   });
+
+//   // =====================
+//   // INPUT CHANGE
+//   // =====================
+//   const handleChange = (e) => {
+//     const { name, value } = e.target;
+//     setFormData((prev) => ({ ...prev, [name]: value }));
+//   };
+
+//   // =====================
+//   // REGISTER
+//   // =====================
+//   const handleRegisterSubmit = async (e, onNavigate) => {
+//     e.preventDefault();
+
+//     if (isSubmittingRef.current) return;
+//     isSubmittingRef.current = true;
+
+//     try {
+//       const res = await axios.post("auth/register", {
+//         name: formData.fullName,
+//         phone: formData.mobileNumber,
+//         email: formData.email,
+//         password: formData.password,
+//       });
+
+//       toast.success(res.data.message || "🎉 Registration successful");
+
+//       setTimeout(() => {
+//         isSubmittingRef.current = false;
+//         if (onNavigate) onNavigate(); // go to login page
+//       }, 800);
+//     } catch (err) {
+//       toast.error(
+//         err.response?.data?.message || "Registration failed"
+//       );
+//       isSubmittingRef.current = false;
+//     }
+//   };
+
+//   // =====================
+//   // LOGIN
+//   // =====================
+//   const handleLoginSubmit = async (e) => {
+//     e.preventDefault();
+
+//     if (isSubmittingRef.current) return;
+//     isSubmittingRef.current = true;
+
+//     try {
+//       const res = await axiosInstance.post("auth/login", {
+//         email: formData.email,
+//         password: formData.password,
+//       });
+
+//       const { response, roleid, userid } = res.data;
+
+//       // 🔥 STORE AUTH DATA (SENIOR STYLE)
+//       localStorage.setItem("accesstoken", response);
+//       localStorage.setItem("roleid", roleid);
+//       localStorage.setItem("userid", userid);
+
+//       toast.success("✅ Login successful");
+
+//       setTimeout(() => {
+//         isSubmittingRef.current = false;
+
+//         if (Number(roleid) === 1) {
+//           navigate("/admin");
+//         } else {
+//           navigate("/form");
+//         }
+//       }, 800);
+//     } catch (err) {
+//       toast.error(
+//         err.response?.data?.message || "Login failed"
+//       );
+//       isSubmittingRef.current = false;
+//     }
+//   };
+
+//   // =====================
+//   // RETURN
+//   // =====================
+//   return {
+//     formData,
+//     handleChange,
+//     handleRegisterSubmit,
+//     handleLoginSubmit,
+//   };
+// };
+
+
 import { useState, useRef } from "react";
-import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { registerUser, loginUser } from "../services/authService";
 
 export const useAuthForm = () => {
   const navigate = useNavigate();
@@ -13,98 +128,76 @@ export const useAuthForm = () => {
     password: "",
   });
 
+  // =====================
+  // INPUT CHANGE
+  // =====================
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleRegisterSubmit = (e, onNavigate) => {
+  // =====================
+  // REGISTER
+  // =====================
+  const handleRegisterSubmit = async (e, onNavigate) => {
     e.preventDefault();
-
     if (isSubmittingRef.current) return;
     isSubmittingRef.current = true;
 
-    const users = JSON.parse(localStorage.getItem("users")) || [];
+    try {
+      const res = await registerUser({
+        name: formData.fullName,
+        phone: formData.mobileNumber,
+        email: formData.email,
+        password: formData.password,
+      });
 
-    const exists = users.some(
-      (u) =>
-        u.email === formData.email ||
-        u.mobileNumber === formData.mobileNumber
-    );
+      toast.success(res.data.message || "🎉 Registration successful");
 
-    if (exists) {
-      toast.error("⚠️ Email or Mobile already registered");
+      setTimeout(() => {
+        isSubmittingRef.current = false;
+        if (onNavigate) onNavigate();
+      }, 800);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Registration failed");
       isSubmittingRef.current = false;
-      return;
     }
-
-    const role = formData.email === "admin@gmail.com" ? 1 : 2;
-
-    const newUser = {
-      id: Date.now(),
-      fullName: formData.fullName,
-      mobileNumber: formData.mobileNumber,
-      email: formData.email,
-      password: formData.password,
-      role,
-      status: "APPROVED",
-      hasSubmittedForm: false,
-      createdAt: new Date().toISOString(),
-    };
-
-    users.push(newUser);
-    localStorage.setItem("users", JSON.stringify(users));
-
-    toast.success("🎉 Signup successful!");
-
-    setTimeout(() => {
-      isSubmittingRef.current = false;
-      if (onNavigate) onNavigate();
-    }, 1000);
   };
 
-  const handleLoginSubmit = (e) => {
+  // =====================
+  // LOGIN (EMAIL OR MOBILE)
+  // =====================
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
-
     if (isSubmittingRef.current) return;
     isSubmittingRef.current = true;
 
-    const users = JSON.parse(localStorage.getItem("users")) || [];
+    try {
+      const res = await loginUser({
+        email: formData.email, // email OR mobile number
+        password: formData.password,
+      });
 
-    const foundUser = users.find(
-      (u) =>
-        (u.email === formData.email ||
-          u.mobileNumber === formData.email) &&
-        u.password === formData.password
-    );
+      const { response, roleid, userid } = res.data;
 
-    if (!foundUser) {
-      toast.error("❌ Invalid credentials");
+      localStorage.setItem("accesstoken", response);
+      localStorage.setItem("roleid", roleid);
+      localStorage.setItem("userid", userid);
+
+      toast.success("✅ Login successful");
+
+      setTimeout(() => {
+        isSubmittingRef.current = false;
+        if (Number(roleid) === 1) {
+          navigate("/admin");
+        } else {
+          navigate("/form");
+        }
+      }, 800);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Login failed");
       isSubmittingRef.current = false;
-      return;
     }
-
-    if (foundUser.role === 2 && foundUser.status !== "APPROVED") {
-      toast.error("⏳ Admin approval pending");
-      isSubmittingRef.current = false;
-      return;
-    }
-
-    localStorage.setItem("currentUser", JSON.stringify(foundUser));
-
-    toast.success("Login successful");
-
-    setTimeout(() => {
-      isSubmittingRef.current = false;
-
-      if (foundUser.role === 1) {
-        navigate("/admin");
-      } else if (!foundUser.hasSubmittedForm) {
-        navigate("/form");
-      } else {
-        navigate("/user/dashboard");
-      }
-    }, 800);
   };
 
   return {

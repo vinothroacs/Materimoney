@@ -10,30 +10,25 @@ const PendingForms = () => {
 
   // LOAD PENDING
 useEffect(() => {
-const loadPending = () => {
-  const data =
-    JSON.parse(localStorage.getItem("pending_profiles")) || [];
+  const loadPending = async () => {
+    const token = localStorage.getItem("token");
 
-  const onlyPendingUsers = data.filter(
-    (p) => p.status === "PENDING" && p.role === "USER"
-  );
+    const res = await fetch(
+      "http://localhost:5000/api/admin/forms/pending",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-  setPending(onlyPendingUsers);
-};
-
+    const data = await res.json();
+    setPending(data);
+  };
 
   loadPending();
-
-  const onFocus = () => loadPending();
-
-  window.addEventListener("focus", onFocus);
-  document.addEventListener("visibilitychange", onFocus);
-
-  return () => {
-    window.removeEventListener("focus", onFocus);
-    document.removeEventListener("visibilitychange", onFocus);
-  };
 }, []);
+
 
 
 
@@ -41,93 +36,43 @@ const loadPending = () => {
 
   // ✅ ACCEPT
 
-const handleAccept = (item) => {
+const handleAccept = async (item) => {
+  const token = localStorage.getItem("token");
 
-  /* 🔥 1. UPDATE USER STATUS */
-const users = JSON.parse(localStorage.getItem("users")) || [];
-
-const updatedUsers = users.map((u) =>
-  u.id === item.id
-    ? {
-        ...u,
-        hasSubmittedForm: true,
-        status: "APPROVED", // approval wait
-      }
-    : u
-);
-
-localStorage.setItem("users", JSON.stringify(updatedUsers));
-
-
-  /* 🔥 2. MOVE TO APPROVED LIST */
-  const approved =
-    JSON.parse(localStorage.getItem("approved_profiles")) || [];
-
-  approved.push({
-    ...item,
-    status: "approved",
-    approvedAt: new Date().toISOString(),
-  });
-
-  localStorage.setItem(
-    "approved_profiles",
-    JSON.stringify(approved)
+  await fetch(
+    `http://localhost:5000/api/admin/approve/${item.id}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   );
 
-  /* 🔥 3. REMOVE FROM PENDING */
-  const updatedPending = pending.filter(
-    (p) => p.id !== item.id
-  );
-
-  localStorage.setItem(
-    "pending_profiles",
-    JSON.stringify(updatedPending)
-  );
-
-  setPending(updatedPending);
-
-  /* 🔔 4. NOTIFICATION */
-  addNotification({
-    userId: item.id,
-    type: "ADMIN_APPROVAL",
-    message: "Admin approved your profile 🎉",
-  });
-
-  toast.success("User approved successfully ✅");
+  toast.success("User approved & mail sent ✅");
 };
+
 
 
   // ❌ REJECTa
-const handleReject = (item) => {
+const handleReject = async (item) => {
+  const token = localStorage.getItem("token");
 
-  // 🔥 UPDATE USER STATUS
-  const users = JSON.parse(localStorage.getItem("users")) || [];
-
-  const updatedUsers = users.map((u) =>
-    u.id === item.id
-      ? { ...u, status: "REJECTED" }
-      : u
+  await fetch(
+    `http://localhost:5000/api/admin/reject/${item.id}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ reason: "Profile incomplete" }),
+    }
   );
-
-  localStorage.setItem(
-    "users",
-    JSON.stringify(updatedUsers)
-  );
-
-  // 🔥 REMOVE FROM PENDING
-  const updatedPending = pending.filter(
-    (p) => p.id !== item.id
-  );
-
-  localStorage.setItem(
-    "pending_profiles",
-    JSON.stringify(updatedPending)
-  );
-
-  setPending(updatedPending);
 
   toast.error("User rejected ❌");
 };
+
 
   if (pending.length === 0) {
     return (
