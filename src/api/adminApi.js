@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5000/api/admin";
+const BASE_URL = "https://materimoney-backend.onrender.com/api/admin";
 
 /* ===============================
    AUTH HEADER
@@ -13,7 +13,7 @@ const getAuthHeader = () => ({
 // ../../api/adminApi.js
 export const getPendingForms = async () => {
   try {
-    const res = await fetch("http://localhost:5000/api/admin/forms/pending");
+    const res = await fetch("https://materimoney-backend.onrender.com/api/admin/forms/pending");
     const data = await res.json();
     return data.data.data; // ✅ this is the array of pending users
   } catch (err) {

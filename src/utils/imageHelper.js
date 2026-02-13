@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://materimoney-backend.onrender.com";
 
 export const getImageUrl = (filename) => {
   if (!filename) return null;

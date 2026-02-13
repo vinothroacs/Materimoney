@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/user/form/submit";
+const API_URL = "https://materimoney-backend.onrender.com/api/user/form/submit";
 
 export const submitFormAPI = async (formData, token) => {
   try {
